@@ -1,0 +1,176 @@
+## .NET gitignore — Comprehensive for .NET / ASP.NET Core / Blazor / MAUI
+
+# ============================================================
+# BUILD OUTPUT
+# ============================================================
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# ============================================================
+# VISUAL STUDIO FILES
+# ============================================================
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Visual Studio cache/options
+*.VC.db
+*.VC.VC.opendb
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# ============================================================
+# NUGET
+# ============================================================
+*.nupkg
+*.snupkg
+**/[Pp]ackages/
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet local cache (don't commit)
+packages/
+
+# ============================================================
+# TEST RESULTS
+# ============================================================
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+TestResult.xml
+*.trx
+*.coverage
+*.coveragexml
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+.sonarqube/
+
+# ============================================================
+# PUBLISH / DEPLOYMENT
+# ============================================================
+**/publish/
+PublishProfiles/
+**/Properties/PublishProfiles/*.pubxml
+!**/Properties/PublishProfiles/*.pubxml.user
+
+# ============================================================
+# ASP.NET / BLAZOR
+# ============================================================
+**/wwwroot/dist/
+**/wwwroot/.cache/
+
+# Blazor WebAssembly AOT
+*.aotdata
+
+# ============================================================
+# ENTITY FRAMEWORK / MIGRATIONS
+# ============================================================
+# Uncomment if you don't want to commit migrations:
+# **/Migrations/
+
+# ============================================================
+# SECRETS & CONFIG (IMPORTANT — never commit these)
+# ============================================================
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+secrets.json
+**/secrets.json
+**/*.pfx
+**/*.p12
+**/*.key
+**/*.pem
+**/.env
+**/.env.*
+!**/.env.example
+
+# User secrets
+%APPDATA%/Microsoft/UserSecrets/
+~/.microsoft/usersecrets/
+
+# ============================================================
+# DOCKER
+# ============================================================
+# Uncomment if not using Docker in repo:
+# Dockerfile
+# docker-compose*.yml
+.dockerignore
+
+# ============================================================
+# WINDOWS
+# ============================================================
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ============================================================
+# MACOS
+# ============================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ============================================================
+# LINUX
+# ============================================================
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================
+# NODE / FRONTEND (for projects with JS tooling)
+# ============================================================
+node_modules/
+npm-debug.log*
+yarn-error.log
+dist/
+.parcel-cache/
+.next/
+.nuxt/
+
+# ============================================================
+# AZURE / CI
+# ============================================================
+.azure/
+.github/workflows/*.log
+
+# ============================================================
+# MISC
+# ============================================================
+*.cache
+*.tmp
+*.temp
+*.bak
+*.orig
+*.swp
+*.log
