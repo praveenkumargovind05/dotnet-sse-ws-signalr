@@ -58,7 +58,6 @@ namespace APIServer.Controllers
         private static async Task<string> WaitForNewItem(CancellationToken token)
         {
             var randomSec = Random.Shared.Next(1, 40);
-            Console.WriteLine(randomSec);
             await Task.Delay(TimeSpan.FromSeconds(randomSec), token);
             return "Hello";
         }
