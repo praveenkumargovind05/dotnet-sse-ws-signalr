@@ -1,7 +1,7 @@
 using System.Threading.Channels;
-using APIServer.Model;
+using APIServer.Model.SSE;
 
-namespace APIServer.Services.Contract;
+namespace APIServer.Services.SSE.Contract;
 
 public interface IEventBroadcaster<TData>
 {

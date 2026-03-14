@@ -1,6 +1,6 @@
 using System;
 
-namespace APIServer.Model;
+namespace APIServer.Model.SSE;
 
 public record SseEvent<T>
 {

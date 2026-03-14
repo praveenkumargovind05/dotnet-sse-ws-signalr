@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Intrinsics.Arm;
-using APIServer.Model;
-using APIServer.Services.Contract;
+using APIServer.Model.SSE;
+using APIServer.Services.SSE.Contract;
 
 namespace APIServer.Services;
 

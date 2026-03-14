@@ -11,9 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Model/" />
-    <Folder Include="Services/Concrete/" />
-    <Folder Include="Services/Contract/" />
+    <Folder Include="Services/WS/Concrete/" />
   </ItemGroup>
 
 </Project>
