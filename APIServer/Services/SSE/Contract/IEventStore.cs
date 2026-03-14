@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.Intrinsics.X86;
-using APIServer.Model;
+using APIServer.Model.SSE;
 
-namespace APIServer.Services.Contract;
+namespace APIServer.Services.SSE.Contract;
 
 public interface IEventStore<TData>
 {

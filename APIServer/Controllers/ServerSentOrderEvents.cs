@@ -1,6 +1,6 @@
 using System.Text.Json;
-using APIServer.Model;
-using APIServer.Services.Contract;
+using APIServer.Model.SSE;
+using APIServer.Services.SSE.Contract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -94,7 +94,7 @@ namespace APIServer.Controllers
                 //     await WriteEventAsync(HttpContext, evt, cancellationToken);
 
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 // Ignore 
             }

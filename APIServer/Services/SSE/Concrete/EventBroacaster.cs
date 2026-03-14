@@ -1,10 +1,10 @@
 using System;
 using System.Runtime.Intrinsics.X86;
 using System.Threading.Channels;
-using APIServer.Model;
-using APIServer.Services.Contract;
+using APIServer.Model.SSE;
+using APIServer.Services.SSE.Contract;
 
-namespace APIServer.Services.Concrete;
+namespace APIServer.Services.SSE.Concrete;
 
 /// <summary>
 /// Helper class to add and read data from channel

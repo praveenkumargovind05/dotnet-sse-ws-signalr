@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Concurrent;
-using APIServer.Model;
-using APIServer.Services.Contract;
+using APIServer.Model.SSE;
+using APIServer.Services.SSE.Contract;
 
-namespace APIServer.Services.Concrete;
+namespace APIServer.Services.SSE.Concrete;
 
 /// <summary>
 /// To store the SSE Item for replay of client missed 
