@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Model/SignalR/" />
+    <Folder Include="Services/SignalR/" />
+    <Folder Include="Services/SignalR/Concrete/" />
+    <Folder Include="Services/SignalR/Contract/" />
     <Folder Include="Services/WS/Concrete/" />
   </ItemGroup>
 
