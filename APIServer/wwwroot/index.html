@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SignalR Tester</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<style>
+  :root {
+    --bg: #0e1117;
+    --bg2: #161b27;
+    --bg3: #1e2535;
+    --bg4: #252c3d;
+    --border: #2d3548;
+    --text: #cdd6f4;
+    --muted: #6c7899;
+    --accent: #89b4fa;
+    --green: #a6e3a1;
+    --red: #f38ba8;
+    --yellow: #f9e2af;
+    --teal: #94e2d5;
+    --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 13px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  header h1 { font-size: 14px; font-weight: 600; color: var(--accent); letter-spacing: 0.05em; }
+
+  .pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; border: 1px solid var(--border);
+    background: var(--bg3); color: var(--muted);
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); transition: all 0.3s; }
+  .dot.on  { background: var(--green); box-shadow: 0 0 5px var(--green); }
+  .dot.mid { background: var(--yellow); animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .layout { display: grid; grid-template-columns: 320px 1fr; flex: 1; overflow: hidden; }
+
+  /* LEFT PANEL */
+  .left { background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+
+  .section { border-bottom: 1px solid var(--border); padding: 14px; }
+  .sec-title {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .badge {
+    background: rgba(137,180,250,0.12); color: var(--accent);
+    font-size: 9px; padding: 1px 5px; border-radius: 3px; text-transform: none; letter-spacing: 0;
+  }
+
+  label { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; margin-top: 8px; }
+  label:first-of-type { margin-top: 0; }
+
+  input, select, textarea {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--mono); font-size: 12px;
+    padding: 6px 10px; border-radius: 5px; outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 70px; }
+  select { cursor: pointer; }
+  select option { background: var(--bg3); }
+
+  .btn {
+    width: 100%; padding: 7px 12px; border-radius: 5px;
+    border: 1px solid var(--border); font-family: var(--mono);
+    font-size: 12px; cursor: pointer; text-align: left;
+    display: flex; align-items: center; gap: 8px;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    color: var(--text); background: var(--bg3); margin-top: 8px;
+  }
+  .btn:hover { background: var(--bg4); border-color: var(--accent); color: var(--accent); }
+  .btn.primary { background: var(--accent); color: #0e1117; border-color: var(--accent); font-weight: 600; }
+  .btn.primary:hover { opacity: 0.9; color: #0e1117; }
+  .btn.danger { border-color: var(--red); color: var(--red); }
+  .btn.danger:hover { background: rgba(243,139,168,0.1); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn .ico { width: 14px; text-align: center; font-style: normal; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+
+  /* ARGS builder */
+  .args-row { display: flex; gap: 6px; margin-bottom: 4px; align-items: center; }
+  .args-row input { flex: 1; margin: 0; }
+  .args-row .rm { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0 4px; }
+  .args-row .rm:hover { color: var(--red); }
+
+  /* RIGHT PANEL */
+  .right { display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+
+  .log-header {
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg2); flex-shrink: 0;
+  }
+  .log-header span { font-size: 12px; color: var(--text); }
+  .spacer { flex: 1; }
+  .clr-btn {
+    background: none; border: 1px solid var(--border); color: var(--muted);
+    font-family: var(--mono); font-size: 11px; padding: 3px 10px;
+    border-radius: 4px; cursor: pointer;
+  }
+  .clr-btn:hover { border-color: var(--muted); color: var(--text); }
+
+  #log {
+    flex: 1; overflow-y: auto; padding: 12px 16px;
+    display: flex; flex-direction: column; gap: 3px;
+    font-size: 12px;
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 72px 60px 1fr;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    line-height: 1.5;
+    animation: fadeIn 0.15s ease;
+    border-left: 2px solid transparent;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(3px); } to { opacity:1; transform:none; } }
+
+  .entry.sys     { border-left-color: var(--muted);   background: rgba(108,120,153,0.06); }
+  .entry.sent    { border-left-color: var(--accent);  background: rgba(137,180,250,0.06); }
+  .entry.recv    { border-left-color: var(--green);   background: rgba(166,227,161,0.06); }
+  .entry.error   { border-left-color: var(--red);     background: rgba(243,139,168,0.08); }
+  .entry.event   { border-left-color: var(--teal);    background: rgba(148,226,213,0.06); }
+
+  .e-time { color: var(--muted); font-size: 10px; align-self: start; padding-top: 2px; white-space: nowrap; }
+  .e-dir  { font-size: 10px; font-weight: 600; align-self: start; padding-top: 2px; white-space: nowrap; }
+  .entry.sys   .e-dir { color: var(--muted); }
+  .entry.sent  .e-dir { color: var(--accent); }
+  .entry.recv  .e-dir { color: var(--green); }
+  .entry.error .e-dir { color: var(--red); }
+  .entry.event .e-dir { color: var(--teal); }
+
+  .e-body { color: var(--text); word-break: break-all; }
+  .e-body .method { color: var(--yellow); font-weight: 600; }
+  .e-body .args   { color: var(--teal); }
+  .e-body .info   { color: var(--muted); }
+
+  /* subscriptions list */
+  .sub-list { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+  .sub-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 8px; background: var(--bg3); border-radius: 4px;
+    border: 1px solid var(--border); font-size: 11px;
+  }
+  .sub-item .sub-name { flex: 1; color: var(--teal); }
+  .sub-item .sub-rm { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; }
+  .sub-item .sub-rm:hover { color: var(--red); }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#9889; SignalR Tester</h1>
+  <div class="pill">
+    <div class="dot" id="dot"></div>
+    <span id="status-text">Disconnected</span>
+  </div>
+  <span id="conn-id" style="font-size:11px;color:var(--muted);display:none"></span>
+</header>
+
+<div class="layout">
+
+  <!-- ── LEFT ── -->
+  <div class="left">
+
+    <!-- Connection -->
+    <div class="section">
+      <div class="sec-title">Connection</div>
+      <label>Hub URL</label>
+      <input id="hub-url" value="http://localhost:5201/chat-hub" spellcheck="false"/>
+      <label>Transport</label>
+      <select id="transport">
+        <option value="0">Auto (negotiate best)</option>
+        <option value="1">WebSockets only</option>
+        <option value="2">Server-Sent Events only</option>
+        <option value="4">Long Polling only</option>
+      </select>
+      <label>Access Token (JWT, optional)</label>
+      <input id="token" placeholder="eyJ..." spellcheck="false"/>
+      <div class="row2">
+        <button class="btn primary" id="btn-connect" onclick="doConnect()"><i class="ico">&#9654;</i> Connect</button>
+        <button class="btn danger"  id="btn-disconnect" onclick="doDisconnect()" disabled><i class="ico">&#9632;</i> Disconnect</button>
+      </div>
+    </div>
+
+    <!-- Invoke -->
+    <div class="section">
+      <div class="sec-title">Invoke Hub Method <span class="badge">client → server</span></div>
+      <label>Method name</label>
+      <input id="method-name" placeholder="SendMessage" />
+      <label>Arguments</label>
+      <div id="args-container"></div>
+      <button class="btn" onclick="addArg()" style="margin-top:4px"><i class="ico">+</i> Add argument</button>
+      <div class="row2" style="margin-top:8px">
+        <button class="btn primary" id="btn-invoke" onclick="doInvoke()" disabled><i class="ico">&#8627;</i> invoke()</button>
+        <button class="btn" id="btn-send" onclick="doSend()" disabled><i class="ico">&#8594;</i> send()</button>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px">
+        <code style="color:var(--yellow)">invoke</code> awaits a return value &nbsp;|&nbsp; <code style="color:var(--accent)">send</code> is fire-and-forget
+      </div>
+    </div>
+
+    <!-- Subscribe -->
+    <div class="section">
+      <div class="sec-title">Subscribe to Event <span class="badge">server → client</span></div>
+      <label>Event name</label>
+      <input id="event-name" placeholder="ReceiveMessage"/>
+      <button class="btn" id="btn-subscribe" onclick="doSubscribe()" disabled><i class="ico">&#9673;</i> Subscribe</button>
+      <div class="sub-list" id="sub-list"></div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="section">
+      <div class="sec-title">Quick Actions</div>
+      <button class="btn" onclick="quickPing()" id="btn-ping" disabled><i class="ico">&#9675;</i> Ping server (if hub has it)</button>
+      <button class="btn" onclick="checkState()"><i class="ico">&#9432;</i> Log connection state</button>
+    </div>
+
+  </div>
+
+  <!-- ── RIGHT ── -->
+  <div class="right">
+    <div class="log-header">
+      <span>Event Log</span>
+      <div class="spacer"></div>
+      <button class="clr-btn" onclick="clearLog()">clear</button>
+    </div>
+    <div id="log">
+      <div class="entry sys">
+        <span class="e-time"></span>
+        <span class="e-dir">READY</span>
+        <span class="e-body">Fill in the Hub URL on the left and click Connect.</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let connection = null;
+const subscriptions = {};   // eventName → handler fn
+
+// ── CONNECT ──────────────────────────────────────────
+async function doConnect() {
+  const url       = document.getElementById('hub-url').value.trim();
+  const transport = parseInt(document.getElementById('transport').value);
+  const token     = document.getElementById('token').value.trim();
+
+  if (!url) { addLog('error', 'ERR', 'Hub URL is required'); return; }
+
+  setStatus('connecting');
+  addLog('sys', 'SYS', `Connecting to <span class="method">${url}</span> …`);
+
+  try {
+    const builder = new signalR.HubConnectionBuilder()
+      .withUrl(url, {
+        transport,
+        ...(token ? { accessTokenFactory: () => token } : {})
+      })
+      .withAutomaticReconnect([0, 2000, 5000, 10000])
+      .configureLogging(signalR.LogLevel.Warning);
+
+    connection = builder.build();
+
+    // Lifecycle hooks
+    connection.onclose(err => {
+      setStatus('disconnected');
+      addLog('sys', 'CLOSE', err ? `Closed with error: ${err.message}` : 'Connection closed');
+      setButtons(false);
+    });
+
+    connection.onreconnecting(err => {
+      setStatus('connecting');
+      addLog('sys', 'RECONN', `Reconnecting… ${err?.message ?? ''}`);
+    });
+
+    connection.onreconnected(id => {
+      setStatus('connected');
+      addLog('sys', 'RECONN', `Reconnected. New connection ID: <span class="info">${id}</span>`);
+    });
+
+    await connection.start();
+
+    setStatus('connected');
+    const cid = connection.connectionId;
+    document.getElementById('conn-id').textContent = `id: ${cid}`;
+    document.getElementById('conn-id').style.display = 'inline';
+    addLog('sys', 'OPEN', `Connected. Connection ID: <span class="info">${cid}</span>`);
+    setButtons(true);
+
+    // Re-attach any existing subscriptions
+    Object.keys(subscriptions).forEach(name => {
+      connection.on(name, subscriptions[name]);
+    });
+
+  } catch(e) {
+    setStatus('disconnected');
+    addLog('error', 'ERR', `Failed to connect: ${e.message}`);
+  }
+}
+
+// ── DISCONNECT ───────────────────────────────────────
+async function doDisconnect() {
+  if (!connection) return;
+  addLog('sys', 'SYS', 'Disconnecting…');
+  await connection.stop();
+  document.getElementById('conn-id').style.display = 'none';
+}
+
+// ── INVOKE ───────────────────────────────────────────
+async function doInvoke() {
+  const method = document.getElementById('method-name').value.trim();
+  if (!method) { addLog('error', 'ERR', 'Method name required'); return; }
+  const args = getArgs();
+
+  addLog('sent', 'INVOKE', `<span class="method">${method}</span>(<span class="args">${fmtArgs(args)}</span>)`);
+
+  try {
+    const result = await connection.invoke(method, ...args);
+    if (result !== undefined && result !== null) {
+      addLog('recv', 'RETURN', `<span class="method">${method}</span> returned: <span class="args">${JSON.stringify(result)}</span>`);
+    } else {
+      addLog('recv', 'OK', `<span class="method">${method}</span> completed (no return value)`);
+    }
+  } catch(e) {
+    addLog('error', 'ERR', `${e.message}`);
+  }
+}
+
+// ── SEND (fire and forget) ───────────────────────────
+async function doSend() {
+  const method = document.getElementById('method-name').value.trim();
+  if (!method) { addLog('error', 'ERR', 'Method name required'); return; }
+  const args = getArgs();
+
+  addLog('sent', 'SEND', `<span class="method">${method}</span>(<span class="args">${fmtArgs(args)}</span>)`);
+
+  try {
+    await connection.send(method, ...args);
+    addLog('sys', 'SENT', 'Fire-and-forget sent');
+  } catch(e) {
+    addLog('error', 'ERR', e.message);
+  }
+}
+
+// ── SUBSCRIBE ────────────────────────────────────────
+function doSubscribe() {
+  const name = document.getElementById('event-name').value.trim();
+  if (!name) { addLog('error', 'ERR', 'Event name required'); return; }
+  if (subscriptions[name]) { addLog('sys', 'SYS', `Already subscribed to <span class="method">${name}</span>`); return; }
+
+  const handler = (...args) => {
+    addLog('event', 'EVENT', `<span class="method">${name}</span>  <span class="args">${fmtArgs(args)}</span>`);
+  };
+
+  subscriptions[name] = handler;
+  connection.on(name, handler);
+
+  addLog('sys', 'SUB', `Subscribed to <span class="method">${name}</span>`);
+  renderSubList();
+  document.getElementById('event-name').value = '';
+}
+
+function unsubscribe(name) {
+  if (!subscriptions[name]) return;
+  connection?.off(name, subscriptions[name]);
+  delete subscriptions[name];
+  addLog('sys', 'UNSUB', `Unsubscribed from <span class="method">${name}</span>`);
+  renderSubList();
+}
+
+function renderSubList() {
+  const el = document.getElementById('sub-list');
+  el.innerHTML = '';
+  Object.keys(subscriptions).forEach(name => {
+    el.innerHTML += `
+      <div class="sub-item">
+        <span class="sub-name">&#9673; ${name}</span>
+        <button class="sub-rm" onclick="unsubscribe('${name}')" title="Remove">&#215;</button>
+      </div>`;
+  });
+}
+
+// ── QUICK ACTIONS ────────────────────────────────────
+async function quickPing() {
+  const t = Date.now();
+  try {
+    await connection.invoke('Ping');
+    addLog('recv', 'PONG', `RTT: ${Date.now()-t}ms`);
+  } catch {
+    // try send instead
+    addLog('sys', 'SYS', `Hub may not have a Ping method — check your Hub`);
+  }
+}
+
+function checkState() {
+  if (!connection) { addLog('sys', 'SYS', 'No connection object'); return; }
+  const states = { 0: 'Connecting', 1: 'Connected', 2: 'Reconnecting', 4: 'Disconnected' };
+  const s = states[connection.state] ?? connection.state;
+  addLog('sys', 'STATE', `HubConnectionState: <span class="method">${s}</span>  |  ID: <span class="info">${connection.connectionId ?? 'none'}</span>`);
+}
+
+// ── ARGS BUILDER ─────────────────────────────────────
+function addArg(val='') {
+  const container = document.getElementById('args-container');
+  const idx = container.children.length;
+  const row = document.createElement('div');
+  row.className = 'args-row';
+  row.dataset.idx = idx;
+  row.innerHTML = `
+    <input placeholder='Arg ${idx+1}  (e.g. "Alice" or 42 or true)' value="${val}"/>
+    <button class="rm" onclick="this.parentElement.remove()">&#215;</button>`;
+  container.appendChild(row);
+  row.querySelector('input').focus();
+}
+
+function getArgs() {
+  return [...document.getElementById('args-container').querySelectorAll('input')]
+    .map(i => {
+      const v = i.value.trim();
+      // Only parse if it looks like a number, bool, array, or object
+      if (/^-?\d/.test(v) || v === 'true' || v === 'false' || v === 'null' 
+          || v.startsWith('[') || v.startsWith('{')) {
+        try { return JSON.parse(v); } catch { return v; }
+      }
+      // Strip surrounding quotes if user typed them manually
+      return v.replace(/^["']|["']$/g, '');
+    });
+}
+
+function fmtArgs(args) {
+  return args.map(a => JSON.stringify(a)).join(', ');
+}
+
+// ── LOG ──────────────────────────────────────────────
+function addLog(type, dir, html) {
+  const el = document.getElementById('log');
+  const now = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  const row = document.createElement('div');
+  row.className = `entry ${type}`;
+  row.innerHTML = `<span class="e-time">${now}</span><span class="e-dir">${dir}</span><span class="e-body">${html}</span>`;
+  el.appendChild(row);
+  el.scrollTop = el.scrollHeight;
+}
+
+function clearLog() {
+  document.getElementById('log').innerHTML = '';
+}
+
+// ── UI STATE ─────────────────────────────────────────
+function setStatus(s) {
+  const dot  = document.getElementById('dot');
+  const txt  = document.getElementById('status-text');
+  dot.className = 'dot ' + (s === 'connected' ? 'on' : s === 'connecting' ? 'mid' : '');
+  txt.textContent = s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function setButtons(connected) {
+  document.getElementById('btn-connect').disabled    =  connected;
+  document.getElementById('btn-disconnect').disabled = !connected;
+  document.getElementById('btn-invoke').disabled     = !connected;
+  document.getElementById('btn-send').disabled       = !connected;
+  document.getElementById('btn-subscribe').disabled  = !connected;
+  document.getElementById('btn-ping').disabled       = !connected;
+}
+
+// Enter key in method input triggers invoke
+document.getElementById('method-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doInvoke();
+});
+
+// Start with one empty arg row
+addArg();
+</script>
+</body>
+</html>
